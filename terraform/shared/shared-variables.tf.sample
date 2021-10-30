@@ -1,0 +1,11 @@
+variable "project" {
+  default = ""
+}
+
+variable "region" {
+  default = ""
+}
+
+variable "location" {
+  default = ""
+}
