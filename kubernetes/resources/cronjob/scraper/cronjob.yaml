@@ -12,8 +12,8 @@ spec:
           - name: hello
             image: busybox
             env:
-            - name: DATABASE_URL
-              value: "Hello from the environment"
+            - name: DB_HOST
+              value: ""
             command:
             - /bin/sh
             - -c
