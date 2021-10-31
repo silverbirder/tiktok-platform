@@ -11,6 +11,9 @@ spec:
           containers:
           - name: hello
             image: busybox
+            env:
+            - name: DATABASE_URL
+              value: "Hello from the environment"
             command:
             - /bin/sh
             - -c
