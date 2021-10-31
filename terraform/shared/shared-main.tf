@@ -8,3 +8,8 @@ module "kubernetes-engine" {
   project  = var.project
   location = var.location
 }
+
+module "cloud-build" {
+  source   = "../modules/cloud-build"
+  project  = var.project
+}
