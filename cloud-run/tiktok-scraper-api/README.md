@@ -2,10 +2,10 @@
 $ python3 -m venv .venv
 $ source ./bin/activate
 $ pip3 install -r requirements.txt
-$ FLASK_RUN_PORT=8000 python3 -m flask run --without-threads
+$ python3 -m gunicorn --bind :5000 --workers 1 --threads 8 app:app
 ```
 
 ```
 $ docker build . -t tiktok-scraper-api:latest
-$ docker run --rm -it -e FLASK_RUN_PORT=5000 -e FLASK_DEBUG=1 -p 5000:5000 tiktok-scraper-api:latest
+$ docker run --rm -it -e PORT=5000 -p 5000:5000 tiktok-scraper-api:latest
 ```

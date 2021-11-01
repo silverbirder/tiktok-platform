@@ -1,8 +1,10 @@
+import os
+
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-@app.route("/api/by_username")
+@app.route('/api/by_username')
 def by_username():
     from TikTokApi import TikTokApi
     api = TikTokApi.get_instance()
@@ -17,5 +19,5 @@ def by_username():
     )
     return jsonify(tiktoks)
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))

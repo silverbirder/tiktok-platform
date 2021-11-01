@@ -5,4 +5,4 @@ COPY . .
 RUN pip3 install -r requirements.txt
 RUN python -m playwright install
 
-CMD ["python","-m", "flask", "run", "--without-threads"]
+CMD ["python","-m", "gunicorn", "--bind", ":$PORT", "--workers","1", "--threads", "8", "app:app"]
