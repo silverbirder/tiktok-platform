@@ -34,6 +34,42 @@ resource "google_cloudbuild_trigger" "tiktok-platform-kubernetes-cronjob-scraper
   }
 }
 
+resource "google_cloudbuild_trigger" "tiktok-platform-kubernetes-cronjob-tiktok-scraper" {
+  project     = var.project
+  name        = "tiktok-platform-kubernetes-cronjob-tiktok-scraper"
+  description = "Cloud Build to trigger kubernetes/resources/cronjob/tiktok-scraper source code changes."
+  build {
+    images = [
+      "gcr.io/${var.project}/github.com/silver-birder/tiktok-platform/kubernetes/resources/cronjob/tiktok-scraper:$COMMIT_SHA",
+      "gcr.io/${var.project}/github.com/silver-birder/tiktok-platform/kubernetes/resources/cronjob/tiktok-scraper:latest",
+    ]
+    step {
+      dir  = "kubernetes/resources/cronjob/tiktok-scraper/"
+      name = "gcr.io/cloud-builders/docker"
+      args = [
+        "build",
+        "-t",
+        "gcr.io/${var.project}/github.com/silver-birder/tiktok-platform/kubernetes/resources/cronjob/tiktok-scraper:$COMMIT_SHA",
+        "-t",
+        "gcr.io/${var.project}/github.com/silver-birder/tiktok-platform/kubernetes/resources/cronjob/tiktok-scraper:latest",
+        ".",
+      ]
+    }
+    timeout = "600s"
+  }
+  included_files = [
+    "kubernetes/resources/cronjob/tiktok-scraper/**",
+  ]
+  github {
+    name  = "tiktok-platform"
+    owner = "Silver-birder"
+    push {
+      branch       = "^main$"
+      invert_regex = false
+    }
+  }
+}
+
 resource "google_cloudbuild_trigger" "tiktok-platform-cloud-run-tiktok-scraper-api" {
   project     = var.project
   name        = "tiktok-platform-cloud-run-tiktok-scraper-api"
