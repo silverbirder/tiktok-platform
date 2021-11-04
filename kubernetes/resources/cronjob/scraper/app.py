@@ -1,4 +1,5 @@
 import os
+import json
 
 from TikTokApi import TikTokApi
 from dotenv import load_dotenv
@@ -14,4 +15,4 @@ tiktoks = api.by_username(
     custom_verifyFp=os.environ.get('CUSTOM_VERIFY_FP', '')
 )
 
-print(tiktoks)
+print(json.dumps(tiktoks))
