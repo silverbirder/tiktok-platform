@@ -5,4 +5,6 @@ COPY . .
 RUN pip3 install -r requirements.txt
 RUN python -m playwright install
 
-CMD exec python app.py
+ENTRYPOINT ["python"]
+
+CMD ["app.py"]
