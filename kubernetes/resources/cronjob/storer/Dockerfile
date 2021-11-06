@@ -1,8 +1,15 @@
-FROM rust:1.56.0
-
+FROM rust:1.56.0 AS builder
+RUN USER=root cargo new --bin app
 WORKDIR /app
-
-COPY . .
+COPY ./Cargo.toml ./Cargo.toml
 RUN cargo build --release
+RUN rm src/*.rs
+COPY ./src ./src
+RUN cargo install --locked --path .
 
-ENTRYPOINT ["/app/target/release/scraper"]
+# @see: https://zenn.dev/ucwork/articles/acec204571362b
+FROM debian:buster-slim
+RUN apt-get update && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /usr/local/cargo/bin/storer .
+COPY ./.env ./.env
+ENTRYPOINT ["./storer"]

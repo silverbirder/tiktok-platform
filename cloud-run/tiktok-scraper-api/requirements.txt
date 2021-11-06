@@ -1,4 +1,0 @@
-TikTokApi==4.0.4
-Flask==2.0.2
-playwright==1.16.0
-gunicorn==20.1.0

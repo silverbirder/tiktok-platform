@@ -27,6 +27,9 @@ spec:
       parameters:
       - name: tiktok # ここに展開された値が渡されてくる
     container:
-      image: alpine:latest
-      command: [sh, -c]
-      args: ["echo {{inputs.parameters.tiktok}};"]
+      image: storer:latest
+      command: [./storer]
+      imagePullPolicy: IfNotPresent
+      env:
+      - name: INPUT_DATA
+        value: "{{inputs.parameters.tiktok}}"
