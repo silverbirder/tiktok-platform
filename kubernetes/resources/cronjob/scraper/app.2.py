@@ -8,13 +8,12 @@ load_dotenv()
 
 api = TikTokApi.get_instance()
 device_id = api.generate_device_id()
-tiktoks = api.by_username(
-    os.environ.get('USER_NAME', 'mi_channel.tiktok'),
-    count=int(os.environ.get('COUNT', '1')),
+user = api.get_user(
+    username=os.environ.get('USER_NAME', ''),
     custom_device_id=device_id,
     custom_verifyFp=os.environ.get('CUSTOM_VERIFY_FP', '')
 )
 
-print(json.dumps(tiktoks))
+print(json.dumps(user))
 
 api.clean_up()

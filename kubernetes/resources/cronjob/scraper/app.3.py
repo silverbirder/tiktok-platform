@@ -8,13 +8,15 @@ load_dotenv()
 
 api = TikTokApi.get_instance()
 device_id = api.generate_device_id()
-tiktoks = api.by_username(
-    os.environ.get('USER_NAME', 'mi_channel.tiktok'),
-    count=int(os.environ.get('COUNT', '1')),
+
+pager = api.get_user_pager(
+    os.environ.get('USER_NAME', ''), 
+    page_size=5,
     custom_device_id=device_id,
     custom_verifyFp=os.environ.get('CUSTOM_VERIFY_FP', '')
 )
 
-print(json.dumps(tiktoks))
+for post in pager:    
+    print(post)
 
 api.clean_up()
