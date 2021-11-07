@@ -6,4 +6,9 @@ resource "google_container_cluster" "primary" {
   vertical_pod_autoscaling {
     enabled = true
   }
+  lifecycle {
+    ignore_changes = [
+      master_version
+    ]
+  }
 }
