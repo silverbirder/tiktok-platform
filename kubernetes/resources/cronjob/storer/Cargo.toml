@@ -6,7 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-mysql = "*"
 dotenv = "*"
 serde_json = "*"
 serde = {version = "1.0", features = ["derive"]}
+googapis = { version = "0.5", features = ["google-firestore-v1"] }
+gouth = { version = "0.2" }
+tonic = { version = "0.5", features = ["tls"] }
+prost = "0.8"
+prost-types = "0.8"
+tokio = { version = "1.9", features = ["rt-multi-thread", "time", "fs", "macros"] }
