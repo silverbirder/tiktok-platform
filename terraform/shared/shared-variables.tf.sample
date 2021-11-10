@@ -9,3 +9,11 @@ variable "region" {
 variable "location" {
   default = ""
 }
+
+variable "db_user_name" {
+  default = "me"
+}
+
+variable "db_user_password" {
+  default = "changeme"
+}
