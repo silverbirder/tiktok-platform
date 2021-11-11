@@ -28,7 +28,7 @@ impl Input {
         fields.insert(
             String::from("create_time"),
             Value {
-                value_type: Some(ValueType::IntegerValue(self.createTime.clone())),
+                value_type: Some(ValueType::IntegerValue(self.create_time.clone())),
             },
         );
         Some(Document {
@@ -61,7 +61,7 @@ pub async fn store(data: Input) -> Result<(), Box<dyn std::error::Error>> {
         .create_document(Request::new(CreateDocumentRequest {
             parent: String::from("projects/")
                 + project.as_str()
-                + &String::from("/databases/(default)/documents/root/document"),
+                + &String::from("/databases/(default)/documents"),
             collection_id: String::from("collection"),
             document_id: data.id.clone(),
             document: data.to_document(),
