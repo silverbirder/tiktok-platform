@@ -2,9 +2,10 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Input {
     pub id: String,
-    pub createTime: i64,
+    pub create_time: i64,
 }
 
 pub fn parse(str: String) -> Input {
