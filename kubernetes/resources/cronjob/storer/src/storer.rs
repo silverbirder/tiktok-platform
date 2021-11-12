@@ -57,6 +57,7 @@ pub async fn store(data: Input) -> Result<(), Box<dyn std::error::Error>> {
         Ok(req)
     });
     let project = env::var("GCP_PROJECT").expect("GCP_PROJECT must be set");
+    // https://cloud.google.com/firestore/docs/reference/rest/v1/projects.databases.documents/createDocument
     let response = service
         .create_document(Request::new(CreateDocumentRequest {
             parent: String::from("projects/")
