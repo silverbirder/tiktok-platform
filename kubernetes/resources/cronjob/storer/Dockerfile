@@ -12,4 +12,9 @@ FROM debian:buster-slim
 RUN apt-get update && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /usr/local/cargo/bin/storer .
 COPY ./.env ./.env
+
+# Essentially, let's mount it...
+COPY ./secrets/key.json /secrets/key.json
+ENV GOOGLE_APPLICATION_CREDENTIALS /secrets/key.json
+
 ENTRYPOINT ["./storer"]
