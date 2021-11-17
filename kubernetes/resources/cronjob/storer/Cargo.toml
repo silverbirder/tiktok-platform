@@ -6,12 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dotenv = "*"
-serde_json = "*"
+dotenv = "0.15.0"
+serde_json = "1.0.70"
 serde = {version = "1.0", features = ["derive"]}
-googapis = { version = "0.5", features = ["google-firestore-v1", "google-storagetransfer-v1"] }
+googapis = { version = "0.5", features = ["google-firestore-v1", "google-storage-v1"] }
 gouth = { version = "0.2" }
 tonic = { version = "0.5", features = ["tls"] }
 prost = "0.8"
 prost-types = "0.8"
 tokio = { version = "1.9", features = ["rt-multi-thread", "time", "fs", "macros"] }
+reqwest = "0.11.6"
