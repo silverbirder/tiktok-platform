@@ -1,7 +1,7 @@
 use googapis::{
     google::firestore::v1::{
-        firestore_client::FirestoreClient, value::ValueType, CreateDocumentRequest, Document,
-        MapValue, Value,
+        firestore_client::FirestoreClient, value::ValueType, Document, MapValue,
+        UpdateDocumentRequest, Value,
     },
     CERTIFICATES,
 };
@@ -18,7 +18,7 @@ use crate::parser::Input;
 use std::env;
 
 impl Input {
-    fn to_document(&self) -> Option<Document> {
+    fn to_document(&self, name: &str) -> Option<Document> {
         let mut fields: HashMap<String, Value> = HashMap::new();
         let mut video_fields: HashMap<String, Value> = HashMap::new();
         fields.insert(
@@ -49,6 +49,7 @@ impl Input {
         );
         Some(Document {
             fields: fields,
+            name: name.to_string(),
             ..Default::default()
         })
     }
@@ -73,15 +74,19 @@ pub async fn store(data: Input) -> Result<(), Box<dyn std::error::Error>> {
     });
     let project = env::var("GCP_PROJECT").expect("GCP_PROJECT must be set");
     // https://cloud.google.com/firestore/docs/reference/rest/v1/projects.databases.documents/createDocument
+    let name = [
+        "projects/",
+        project.as_str(),
+        "/databases/(default)/documents/collection/",
+        data.id.as_str(),
+    ]
+    .concat();
     let response = service
-        .create_document(Request::new(CreateDocumentRequest {
-            parent: String::from("projects/")
-                + project.as_str()
-                + &String::from("/databases/(default)/documents"),
-            collection_id: String::from("collection"),
-            document_id: data.id.clone(),
-            document: data.to_document(),
-            ..Default::default()
+        .update_document(Request::new(UpdateDocumentRequest {
+            document: data.to_document(name.as_str()),
+            update_mask: None,
+            mask: None,
+            current_document: None,
         }))
         .await?;
     println!("RESPONSE={:?}", response);
