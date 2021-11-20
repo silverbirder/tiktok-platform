@@ -1,6 +1,7 @@
 use googapis::{
     google::firestore::v1::{
-        firestore_client::FirestoreClient, value::ValueType, CreateDocumentRequest, Document, Value,
+        firestore_client::FirestoreClient, value::ValueType, CreateDocumentRequest, Document,
+        MapValue, Value,
     },
     CERTIFICATES,
 };
@@ -19,6 +20,7 @@ use std::env;
 impl Input {
     fn to_document(&self) -> Option<Document> {
         let mut fields: HashMap<String, Value> = HashMap::new();
+        let mut video_fields: HashMap<String, Value> = HashMap::new();
         fields.insert(
             String::from("id"),
             Value {
@@ -31,6 +33,20 @@ impl Input {
                 value_type: Some(ValueType::IntegerValue(self.create_time.clone())),
             },
         );
+        video_fields.insert(
+            String::from("download_addr"),
+            Value {
+                value_type: Some(ValueType::StringValue(self.video.download_addr.clone())),
+            },
+        );
+        fields.insert(
+            String::from("video"),
+            Value {
+                value_type: Some(ValueType::MapValue(MapValue {
+                    fields: video_fields,
+                })),
+            },
+        );
         Some(Document {
             fields: fields,
             ..Default::default()
@@ -38,7 +54,6 @@ impl Input {
     }
 }
 
-#[tokio::main]
 pub async fn store(data: Input) -> Result<(), Box<dyn std::error::Error>> {
     let tls_config = ClientTlsConfig::new()
         .ca_certificate(Certificate::from_pem(CERTIFICATES))
