@@ -21,16 +21,11 @@ impl Input {
     fn to_document(&self, name: &str) -> Option<Document> {
         let mut fields: HashMap<String, Value> = HashMap::new();
         let mut video_fields: HashMap<String, Value> = HashMap::new();
+        // let mut user_fields: HashMap<String, Value> = HashMap::new();
         fields.insert(
             String::from("id"),
             Value {
                 value_type: Some(ValueType::StringValue(self.id.clone())),
-            },
-        );
-        fields.insert(
-            String::from("create_time"),
-            Value {
-                value_type: Some(ValueType::IntegerValue(self.create_time.clone())),
             },
         );
         video_fields.insert(
@@ -39,6 +34,12 @@ impl Input {
                 value_type: Some(ValueType::StringValue(self.video.download_addr.clone())),
             },
         );
+        // video_fields.insert(
+        //     String::from("original_url"),
+        //     Value {
+        //         value_type: Some(ValueType::StringValue(self.video.original_url.clone())),
+        //     },
+        // );
         fields.insert(
             String::from("video"),
             Value {
@@ -47,6 +48,20 @@ impl Input {
                 })),
             },
         );
+        // user_fields.insert(
+        //     String::from("name"),
+        //     Value {
+        //         value_type: Some(ValueType::StringValue(self.user.name.clone())),
+        //     },
+        // );
+        // fields.insert(
+        //     String::from("user"),
+        //     Value {
+        //         value_type: Some(ValueType::MapValue(MapValue {
+        //             fields: user_fields,
+        //         })),
+        //     },
+        // );
         Some(Document {
             fields: fields,
             name: name.to_string(),
