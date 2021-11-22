@@ -7,5 +7,9 @@ RUN python -m playwright install
 
 COPY . .
 
+# Essentially, let's mount it...
+COPY ./secrets/key.json /secrets/key.json
+ENV GOOGLE_APPLICATION_CREDENTIALS /secrets/key.json
+
 ENTRYPOINT ["python"]
 CMD ["app.py"]
