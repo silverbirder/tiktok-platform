@@ -22,3 +22,8 @@ module "cloud-build" {
 #   db_user_name     = var.db_user_name
 #   db_user_password = var.db_user_password
 # }
+
+module "firestore" {
+  source  = "../modules/firestore"
+  project = var.project
+}
