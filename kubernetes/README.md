@@ -24,5 +24,5 @@ kubectl -n argo port-forward deployment/argo-server 2746:2746
 ```
 
 ```
-argo submit -n argo --watch yaml
+argo submit -n argo --watch tiktok-platform-workflow.yaml
 ```
