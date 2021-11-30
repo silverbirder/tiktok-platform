@@ -38,7 +38,7 @@ video_bytes = api.get_video_by_download_url(
 api.clean_up()
 
 # Save video
-video_file_name = './video/{file_name}'.format(file_name=file_name)
+video_file_name = '{file_name}'.format(file_name=file_name)
 f = open(video_file_name, 'wb')
 f.write(video_bytes)
 f.close()
@@ -51,4 +51,4 @@ video_new_blob = bucket.blob('video/{file_name}'.format(file_name=file_name))
 video_new_blob.upload_from_filename(filename=video_file_name)
 tiktok_json['video']['downloadAddr'] = 'https://storage.googleapis.com/{bucket_name}/{file_name}'.format(bucket_name=bucket_name, file_name=file_name)
 
-print(tiktok_json)
+print(json.dumps(tiktok_json))

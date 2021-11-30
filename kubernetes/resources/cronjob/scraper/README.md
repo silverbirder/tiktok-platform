@@ -6,5 +6,6 @@ $ python3 -m venv .venv
 
 ```
 $ docker build -t scraper .
-$ docker run -it --rm scraper
+$ docker run --rm scraper
+$ docker run --rm --entrypoint "bash" scraper
 ```

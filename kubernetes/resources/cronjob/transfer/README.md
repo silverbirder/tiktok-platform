@@ -6,5 +6,6 @@ $ python3 -m venv .venv
 
 ```
 $ docker build -t transfer .
-$ docker run -it --rm transfer
+$ docker run --rm transfer
+$ docker run -it --rm --entrypoint "bash" transfer
 ```
