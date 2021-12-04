@@ -1,0 +1,1 @@
+kubectl -n argo create secret generic my-secret --from-file=key.json=$(echo $GOOGLE_APPLICATION_CREDENTIALS)

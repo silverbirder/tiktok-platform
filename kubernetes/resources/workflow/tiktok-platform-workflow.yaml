@@ -4,6 +4,10 @@ metadata:
   generateName: tiktok-platform-workflow
 spec:
   entrypoint: tiktok-platform-entrypoint
+  volumes:
+  - name: my-secret-vol
+    secret:
+      secretName: my-secret
   templates:
   - name: tiktok-platform-entrypoint
     steps:
@@ -18,7 +22,7 @@ spec:
         withParam: "{{steps.scraper.outputs.result}}"
   - name: scraper
     retryStrategy:
-      limit: "2"
+      limit: "5"
       retryPolicy: "Always"
     container:
       image: "{{workflow.parameters.docker_scraper}}"
@@ -61,10 +65,15 @@ spec:
       env:
       - name: INPUT_DATA
         value: "{{inputs.parameters.tiktok}}"
-      - name: GCP_PROJECT
-        value: "{{workflow.parameters.tiktok_gcp_project}}"
       - name: CUSTOM_VERIFY_FP
         value: "{{workflow.parameters.tiktok_custom_verify_fp}}"
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /var/secrets/google/key.json
+      - name: GCP_PROJECT
+        value: "{{workflow.parameters.tiktok_gcp_project}}"
+      volumeMounts:
+      - name: my-secret-vol
+        mountPath: "/var/secrets/google"
   - name: storer
     inputs:
       parameters:
@@ -76,3 +85,10 @@ spec:
       env:
       - name: INPUT_DATA
         value: "{{inputs.parameters.tiktok}}"
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /var/secrets/google/key.json
+      - name: GCP_PROJECT
+        value: "{{workflow.parameters.tiktok_gcp_project}}"
+      volumeMounts:
+      - name: my-secret-vol
+        mountPath: "/var/secrets/google"
