@@ -19,7 +19,7 @@ resource "google_cloudbuild_trigger" "tiktok-platform-kubernetes-cronjob-storer"
         ".",
       ]
     }
-    timeout = "600s"
+    timeout = "3600s"
   }
   included_files = [
     "kubernetes/resources/cronjob/storer/**",

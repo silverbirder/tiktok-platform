@@ -11,7 +11,7 @@ RUN cargo install --locked --path .
 FROM debian:buster-slim
 RUN apt-get update && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /usr/local/cargo/bin/storer .
-COPY ./.env ./.env
+# COPY ./.env ./.env
 
 # Essentially, let's mount it...
 # COPY ./secrets/key.json /secrets/key.json
