@@ -17,11 +17,21 @@ spec:
             value: "{{item}}"
         withParam: "{{steps.scraper.outputs.result}}"
   - name: scraper
+    retryStrategy:
+      limit: "2"
+      retryPolicy: "Always"
     container:
-      image: scraper:latest
+      image: "{{workflow.parameters.docker_scraper}}"
       command: [python]
       args: [app.py]
       imagePullPolicy: IfNotPresent
+      env:
+      - name: USER_NAME
+        value: "{{workflow.parameters.tiktok_user_name}}"
+      - name: COUNT
+        value: "{{workflow.parameters.tiktok_user_count}}"
+      - name: CUSTOM_VERIFY_FP
+        value: "{{workflow.parameters.tiktok_custom_verify_fp}}"
   - name: single-tiktok-processer
     inputs:
       parameters:
@@ -44,19 +54,23 @@ spec:
       parameters:
       - name: tiktok
     container:
-      image: transfer:latest
+      image: "{{workflow.parameters.docker_transfer}}"
       command: [python]
       args: [app.py]
       imagePullPolicy: IfNotPresent
       env:
       - name: INPUT_DATA
         value: "{{inputs.parameters.tiktok}}"
+      - name: GCP_PROJECT
+        value: "{{workflow.parameters.tiktok_gcp_project}}"
+      - name: CUSTOM_VERIFY_FP
+        value: "{{workflow.parameters.tiktok_custom_verify_fp}}"
   - name: storer
     inputs:
       parameters:
       - name: tiktok
     container:
-      image: storer:latest
+      image: "{{workflow.parameters.docker_storer}}"
       command: [./storer]
       imagePullPolicy: IfNotPresent
       env:
