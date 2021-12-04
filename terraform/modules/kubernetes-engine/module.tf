@@ -11,4 +11,9 @@ resource "google_container_cluster" "primary" {
       master_version
     ]
   }
+  release_channel {
+    channel = "RAPID"
+    # for gke-spot
+    # @see: https://cloud.google.com/blog/ja/products/containers-kubernetes/announcing-spot-pods-for-gke-autopilot
+  }
 }

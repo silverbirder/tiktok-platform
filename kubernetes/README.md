@@ -2,6 +2,7 @@
 
 ```
 $ gcloud container clusters get-credentials my-gke-cluster --region asia-northeast1 --project $(gcloud config get-value project)
+$ kubectl config current-context
 ```
 
 ## Minikube
