@@ -14,7 +14,7 @@ COPY --from=builder /usr/local/cargo/bin/storer .
 COPY ./.env ./.env
 
 # Essentially, let's mount it...
-COPY ./secrets/key.json /secrets/key.json
-ENV GOOGLE_APPLICATION_CREDENTIALS /secrets/key.json
+# COPY ./secrets/key.json /secrets/key.json
+# ENV GOOGLE_APPLICATION_CREDENTIALS /secrets/key.json
 
 ENTRYPOINT ["./storer"]

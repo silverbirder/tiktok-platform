@@ -6,8 +6,8 @@ RUN pip3 install -r requirements.txt
 RUN python -m playwright install
 
 # Essentially, let's mount it...
-COPY ./secrets/key.json /secrets/key.json
-ENV GOOGLE_APPLICATION_CREDENTIALS /secrets/key.json
+# COPY ./secrets/key.json /secrets/key.json
+# ENV GOOGLE_APPLICATION_CREDENTIALS /secrets/key.json
 
 # Temporary support. Once this one is merged, delete RUN
 # @https://github.com/davidteather/TikTok-Api/pull/753
