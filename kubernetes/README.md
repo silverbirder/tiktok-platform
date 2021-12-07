@@ -23,7 +23,12 @@ eval $(minikube -p minikube docker-env)
 ```
 kubectl apply -f ../namespace/argo.yaml
 kubectl apply -n argo -f https://raw.githubusercontent.com/argoproj/argo-workflows/master/manifests/quick-start-postgres.yaml
+# kubectl apply -n argo -f quick-start-postgres.gke-spot.gke-spot.yaml
 kubectl get all -n argo
+```
+
+```
+kubectl -n argo create secret generic my-secret --from-file=key.json=$(echo $GOOGLE_APPLICATION_CREDENTIALS)
 ```
 
 ```
@@ -31,5 +36,5 @@ kubectl -n argo port-forward deployment/argo-server 2746:2746
 ```
 
 ```
-argo submit -n argo --parameter-file env.yaml --watch tiktok-platform-workflow.yaml
+argo submit -n argo --parameter-file env.yaml --watch tiktok-platform-workflow.gke-spot.yaml
 ```
