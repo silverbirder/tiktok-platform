@@ -1,137 +1,141 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Workflow
+kind: CronWorkflow
 metadata:
-  generateName: tiktok-platform-workflow
+  name: tiktok-platform-workflow
 spec:
-  entrypoint: tiktok-platform-entrypoint
-  volumes:
-  - name: my-secret-vol
-    secret:
-      secretName: my-secret
-  templates:
-  - name: tiktok-platform-entrypoint
-    steps:
-    - - name: loader
-        template: loader
-    - - name: scraper-all
-        template: scraper-all
-        arguments:
-          parameters:
-          - name: tiktok
-            value: "{{item}}"
-        withParam: "{{steps.loader.outputs.result}}"
-  - name: loader
-    script:
-      image: python:alpine3.6
-      command: [python]
-      source: |
-        import os
-        import json
-        users = json.loads(os.environ.get('USERS', '[]'))
-        print(json.dumps(users))
-      imagePullPolicy: IfNotPresent
-      env:
-      - name: USERS
-        valueFrom:
-          configMapKeyRef:
-            name: users
-            key: users.json
-  - name: scraper-all
-    inputs:
-      parameters:
-      - name: tiktok
-    steps:
-      - - name: scraper
-          template: scraper
-          arguments:
-            parameters:
-            - name: tiktok
-              value: "{{inputs.parameters.tiktok}}"
-      - - name: single-tiktok-processer
-          template: single-tiktok-processer
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: "Replace"
+  startingDeadlineSeconds: 0
+  workflowSpec:
+    entrypoint: tiktok-platform-entrypoint
+    volumes:
+    - name: my-secret-vol
+      secret:
+        secretName: my-secret
+    templates:
+    - name: tiktok-platform-entrypoint
+      steps:
+      - - name: loader
+          template: loader
+      - - name: scraper-all
+          template: scraper-all
           arguments:
             parameters:
             - name: tiktok
               value: "{{item}}"
-          withParam: "{{steps.scraper.outputs.result}}"
-  - name: scraper
-    retryStrategy:
-      limit: "5"
-      retryPolicy: "Always"
-    inputs:
-      parameters:
-      - name: tiktok
-    container:
-      image: "{{workflow.parameters.docker_scraper}}"
-      command: [python]
-      args: [app.py]
-      imagePullPolicy: IfNotPresent
-      env:
-      - name: USER_NAME
-        value: "{{=jsonpath(inputs.parameters.tiktok, '$.authorMeta.name')}}"
-      - name: COUNT
-        value: "{{workflow.parameters.tiktok_user_count}}"
-      - name: CUSTOM_VERIFY_FP
-        value: "{{workflow.parameters.tiktok_custom_verify_fp}}"
-    nodeSelector:
-      cloud.google.com/gke-spot: "true"
-  - name: single-tiktok-processer
-    inputs:
-      parameters:
-      - name: tiktok
-    steps:
-      - - name: transfer
-          template: transfer
-          arguments:
-            parameters:
-            - name: tiktok
-              value: "{{inputs.parameters.tiktok}}"
-      - - name: storer
-          template: storer
-          arguments:
-            parameters:
-            - name: tiktok
-              value: "{{steps.transfer.outputs.result}}"
-  - name: transfer
-    inputs:
-      parameters:
-      - name: tiktok
-    container:
-      image: "{{workflow.parameters.docker_transfer}}"
-      command: [python]
-      args: [app.py]
-      imagePullPolicy: IfNotPresent
-      env:
-      - name: INPUT_DATA
-        value: "{{inputs.parameters.tiktok}}"
-      - name: CUSTOM_VERIFY_FP
-        value: "{{workflow.parameters.tiktok_custom_verify_fp}}"
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /var/secrets/google/key.json
-      - name: GCP_PROJECT
-        value: "{{workflow.parameters.tiktok_gcp_project}}"
-      volumeMounts:
-      - name: my-secret-vol
-        mountPath: "/var/secrets/google"
-    nodeSelector:
-      cloud.google.com/gke-spot: "true"
-  - name: storer
-    inputs:
-      parameters:
-      - name: tiktok
-    container:
-      image: "{{workflow.parameters.docker_storer}}"
-      command: [./storer]
-      imagePullPolicy: IfNotPresent
-      env:
-      - name: INPUT_DATA
-        value: "{{inputs.parameters.tiktok}}"
-      - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /var/secrets/google/key.json
-      - name: GCP_PROJECT
-        value: "{{workflow.parameters.tiktok_gcp_project}}"
-      volumeMounts:
-      - name: my-secret-vol
-        mountPath: "/var/secrets/google"
-    nodeSelector:
-      cloud.google.com/gke-spot: "true"
+          withParam: "{{steps.loader.outputs.result}}"
+    - name: loader
+      script:
+        image: python:alpine3.6
+        command: [python]
+        source: |
+          import os
+          import json
+          users = json.loads(os.environ.get('USERS', '[]'))
+          print(json.dumps(users))
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: USERS
+          valueFrom:
+            configMapKeyRef:
+              name: users
+              key: users.json
+    - name: scraper-all
+      inputs:
+        parameters:
+        - name: tiktok
+      steps:
+        - - name: scraper
+            template: scraper
+            arguments:
+              parameters:
+              - name: tiktok
+                value: "{{inputs.parameters.tiktok}}"
+        - - name: single-tiktok-processer
+            template: single-tiktok-processer
+            arguments:
+              parameters:
+              - name: tiktok
+                value: "{{item}}"
+            withParam: "{{steps.scraper.outputs.result}}"
+    - name: scraper
+      retryStrategy:
+        limit: "5"
+        retryPolicy: "Always"
+      inputs:
+        parameters:
+        - name: tiktok
+      container:
+        image: "{{workflow.parameters.docker_scraper}}"
+        command: [python]
+        args: [app.py]
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: USER_NAME
+          value: "{{=jsonpath(inputs.parameters.tiktok, '$.authorMeta.name')}}"
+        - name: COUNT
+          value: "{{workflow.parameters.tiktok_user_count}}"
+        - name: CUSTOM_VERIFY_FP
+          value: "{{workflow.parameters.tiktok_custom_verify_fp}}"
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"
+    - name: single-tiktok-processer
+      inputs:
+        parameters:
+        - name: tiktok
+      steps:
+        - - name: transfer
+            template: transfer
+            arguments:
+              parameters:
+              - name: tiktok
+                value: "{{inputs.parameters.tiktok}}"
+        - - name: storer
+            template: storer
+            arguments:
+              parameters:
+              - name: tiktok
+                value: "{{steps.transfer.outputs.result}}"
+    - name: transfer
+      inputs:
+        parameters:
+        - name: tiktok
+      container:
+        image: "{{workflow.parameters.docker_transfer}}"
+        command: [python]
+        args: [app.py]
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: INPUT_DATA
+          value: "{{inputs.parameters.tiktok}}"
+        - name: CUSTOM_VERIFY_FP
+          value: "{{workflow.parameters.tiktok_custom_verify_fp}}"
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        - name: GCP_PROJECT
+          value: "{{workflow.parameters.tiktok_gcp_project}}"
+        volumeMounts:
+        - name: my-secret-vol
+          mountPath: "/var/secrets/google"
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"
+    - name: storer
+      inputs:
+        parameters:
+        - name: tiktok
+      container:
+        image: "{{workflow.parameters.docker_storer}}"
+        command: [./storer]
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: INPUT_DATA
+          value: "{{inputs.parameters.tiktok}}"
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        - name: GCP_PROJECT
+          value: "{{workflow.parameters.tiktok_gcp_project}}"
+        volumeMounts:
+        - name: my-secret-vol
+          mountPath: "/var/secrets/google"
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"

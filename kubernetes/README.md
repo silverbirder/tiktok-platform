@@ -42,3 +42,7 @@ kubectl -n argo port-forward deployment/argo-server 2746:2746
 argo submit -n argo --parameter-file env.yaml --watch tiktok-platform-workflow.gke-spot.yaml
 argo submit -n argo --parameter-file env.yaml --watch tiktok-platform-workflow.yaml
 ```
+
+```
+argo cron create -n argo --parameter-file env.yaml tiktok-platform-workflow.yaml
+```
