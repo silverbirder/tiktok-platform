@@ -11,19 +11,56 @@ spec:
   templates:
   - name: tiktok-platform-entrypoint
     steps:
-    - - name: scraper
-        template: scraper
-    - - name: single-tiktok-processer
-        template: single-tiktok-processer
+    - - name: loader
+        template: loader
+    - - name: scraper-all
+        template: scraper-all
         arguments:
           parameters:
           - name: tiktok
             value: "{{item}}"
-        withParam: "{{steps.scraper.outputs.result}}"
+        withParam: "{{steps.loader.outputs.result}}"
+  - name: loader
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import os
+        import json
+        users = json.loads(os.environ.get('USERS', '[]'))
+        print(json.dumps(users))
+      imagePullPolicy: IfNotPresent
+      env:
+      - name: USERS
+        valueFrom:
+          configMapKeyRef:
+            name: users
+            key: users.json
+  - name: scraper-all
+    inputs:
+      parameters:
+      - name: tiktok
+    steps:
+      - - name: scraper
+          template: scraper
+          arguments:
+            parameters:
+            - name: tiktok
+              value: "{{inputs.parameters.tiktok}}"
+      - - name: single-tiktok-processer
+          template: single-tiktok-processer
+          arguments:
+            parameters:
+            - name: tiktok
+              value: "{{item}}"
+          withParam: "{{steps.scraper.outputs.result}}"
   - name: scraper
     retryStrategy:
       limit: "5"
       retryPolicy: "Always"
+    inputs:
+      parameters:
+      - name: tiktok
     container:
       image: "{{workflow.parameters.docker_scraper}}"
       command: [python]
@@ -31,7 +68,7 @@ spec:
       imagePullPolicy: IfNotPresent
       env:
       - name: USER_NAME
-        value: "{{workflow.parameters.tiktok_user_name}}"
+        value: "{{=jsonpath(inputs.parameters.tiktok, '$.authorMeta.name')}}"
       - name: COUNT
         value: "{{workflow.parameters.tiktok_user_count}}"
       - name: CUSTOM_VERIFY_FP
