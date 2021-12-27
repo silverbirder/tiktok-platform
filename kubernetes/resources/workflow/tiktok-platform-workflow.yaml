@@ -31,8 +31,9 @@ spec:
         source: |
           import os
           import json
+          import random
           users = json.loads(os.environ.get('USERS', '[]'))
-          print(json.dumps(users))
+          print(json.dumps(random.sample(users, 3)))
         imagePullPolicy: IfNotPresent
         env:
         - name: USERS

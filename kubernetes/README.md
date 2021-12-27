@@ -30,7 +30,7 @@ kubectl get all -n argo
 
 ```
 kubectl -n argo create secret generic my-secret --from-file=key.json=$(echo $GOOGLE_APPLICATION_CREDENTIALS)
-kubectl -n argo create configmap users --from-file=../configmap/users.yaml
+kubectl -n argo create configmap users --from-file=../configmap/users.json
 kubectl -n argo describe configmaps users
 ```
 
